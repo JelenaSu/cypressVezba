@@ -1,0 +1,11 @@
+{
+    "login": {
+        "emailInput": "#email",
+        "passwordInput": "#password",
+        "submitButton": "button[type='submit']"
+    },
+    "header": {
+        "loginButton": "a[href='/login']",
+        "logoutButton": "a[role='button ']"
+    }
+}
