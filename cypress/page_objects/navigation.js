@@ -11,6 +11,10 @@ class Navigation {
         return cy.get("a[href='/register']")
     }
 
+    get createGalleryButton() {
+        return cy.get("a[href='/create']")
+    }
+
     clickOnLoginButton() {
         this.loginButton.click();
     }
@@ -21,6 +25,10 @@ class Navigation {
 
     clickOnRegistrationButton() {
         this.registrationButton.click();
+    }
+
+    clickOnGalleryButton() {
+        this.createGalleryButton.click();
     }
 }
 

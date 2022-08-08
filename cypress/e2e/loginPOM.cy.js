@@ -3,6 +3,7 @@
 import { navigation } from "../page_objects/navigation";
 import { loginPage } from "../page_objects/loginPage";
 import { faker } from '@faker-js/faker';
+import { general } from '../page_objects/general';
 
 let user = {
     firstName: faker.name.firstName(),
@@ -14,19 +15,30 @@ let user = {
 describe("Login test cases", () => {
     beforeEach("Visit gallery app page and click on login button", () => {
         cy.visit("/");
+        cy.url().should('contain', 'gallery-app.vivifyideas.com')
+        general.headerTitle.should('have.text', 'All Galleries');
         navigation.clickOnLoginButton();
+        cy.url().should('contain', '/login');
+        general.headerTitle.should('have.text', 'Please login');
     })
     
     it("Login with valid credentials and logout", () => {
         loginPage.login("danilo.todorovic@vivifyideas.com", "test1234")
-        cy.wait(1000);
-        navigation.clickOnLogoutButton()
+        navigation.loginButton.should('not.exist');
+        navigation.logoutButton.should('exist');
+        navigation.clickOnLogoutButton();
+        navigation.logoutButton.should('not.exist');
+        navigation.loginButton.should('exist');
     })
 
-    it("Login with invalid credentials", () => { 
-        cy.visit("/");
+    it.only("Login with invalid credentials", () => {
         navigation.clickOnLoginButton();
         loginPage.login(faker.internet.email(), "lest1235");
+        general.errorMessage.should('exist')
+            .and('have.text', 'Bad Credentials')
+            .and('have.css', 'background-color', 'rgb(248, 215, 218)')
+            .and('have.css', 'color', 'rgb(114, 28, 36)');
+        navigation.loginButton.should('exist');
     });
 
     it("Login with invalid email", () => {
