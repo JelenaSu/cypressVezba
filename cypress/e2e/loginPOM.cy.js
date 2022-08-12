@@ -4,6 +4,7 @@ import { navigation } from "../page_objects/navigation";
 import { loginPage } from "../page_objects/loginPage";
 import { faker } from '@faker-js/faker';
 import { general } from '../page_objects/general';
+import data from '../fixtures/data.json';
 
 let user = {
     firstName: faker.name.firstName(),
@@ -16,22 +17,33 @@ describe("Login test cases", () => {
     beforeEach("Visit gallery app page and click on login button", () => {
         cy.visit("/");
         cy.url().should('contain', 'gallery-app.vivifyideas.com')
-        general.headerTitle.should('have.text', 'All Galleries');
+        general.headerTitle.should('have.text', data.headers.allGalleries);
         navigation.clickOnLoginButton();
         cy.url().should('contain', '/login');
         general.headerTitle.should('have.text', 'Please login');
     })
     
-    it("Login with valid credentials and logout", () => {
+    it.only("Login with valid credentials and logout", () => {
+        cy.intercept('POST', 'https://gallery-api.vivifyideas.com/api/auth/login').as('validLogin');
+        cy.intercept('POST', 'https://gallery-api.vivifyideas.com/api/auth/logout').as('logout')
         loginPage.login("danilo.todorovic@vivifyideas.com", "test1234")
         navigation.loginButton.should('not.exist');
         navigation.logoutButton.should('exist');
         navigation.clickOnLogoutButton();
         navigation.logoutButton.should('not.exist');
         navigation.loginButton.should('exist');
+        cy.wait('@validLogin').then(intercept => {
+            expect(intercept.response.statusCode).to.eq(200);
+            expect(intercept.response.url).to.eq("https://gallery-api.vivifyideas.com/api/auth/login");
+            expect(intercept.request.body.email).to.eq(Cypress.env('validLoginEmail'))
+            expect(intercept.request.body.password).to.eq(Cypress.env('validLoginPassword'))
+        })
+        cy.wait('@logout').its('response').then(response => {
+            expect(response.statusCode).to.eq(200);
+        })
     })
 
-    it.only("Login with invalid credentials", () => {
+    it("Login with invalid credentials", () => {
         navigation.clickOnLoginButton();
         loginPage.login(faker.internet.email(), "lest1235");
         general.errorMessage.should('exist')

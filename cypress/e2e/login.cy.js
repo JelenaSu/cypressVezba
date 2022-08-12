@@ -2,6 +2,7 @@
 
 const locators = require('../fixtures/locators.json');
 import { navigation } from "../page_objects/navigation";
+import data from '../fixtures/data.json';
 
 describe("Login test cases", () => {
     beforeEach("Visit gallery app page and click on login button", () => {
@@ -9,18 +10,18 @@ describe("Login test cases", () => {
         cy.get(locators.header.loginButton).click();
     })
     
-    it("Login with valid credentials and logout", () => {
+    it.only("Login with valid credentials and logout", () => {
         cy.get(locators.login.emailInput).type("danilo.todorovic@vivifyideas.com");
         cy.get(locators.login.passwordInput).type("test1234");
         cy.get(locators.login.submitButton).click();
-        cy.wait(1000);
-        cy.get(locators.header.logoutButton).click();
+        // cy.get(locators.header.loginButton).should('not.exist')
+        cy.get(locators.header.logoutButton).last().click();
     })
 
     it("Login with invalid credentials", () => { 
         cy.visit("/");
         cy.get(locators.header.loginButton).click();
-        cy.get(locators.login.emailInput).clear().type("test00@gmail.com");
+        cy.get(locators.login.emailInput).clear().type(data.invalidEmail);
         cy.get(locators.login.passwordInput).clear().type("lest1235");
         cy.get(locators.login.submitButton).click();
     });

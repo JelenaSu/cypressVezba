@@ -6,6 +6,6 @@
     },
     "header": {
         "loginButton": "a[href='/login']",
-        "logoutButton": "a[role='button ']"
+        "logoutButton": "[class='nav-link nav-buttons']"
     }
 }
