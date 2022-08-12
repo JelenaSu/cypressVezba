@@ -41,4 +41,4 @@ Cypress.Commands.add('logout', (token) => {
             authorization: `Bearer ${token}`
         }
     })
-})
+});
